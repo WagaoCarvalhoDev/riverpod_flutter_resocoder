@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+
 final counterProvider = StateProvider.autoDispose<int>((ref) => 0);
 
 void main() => runApp(const ProviderScope(child: MyApp()));
@@ -54,13 +55,30 @@ class CounterPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+    ref.listen<int>(counterProvider, (previous, next) {
+      if(next > 5){
+        showDialog(context: context, builder: (context) {
+          return AlertDialog(
+            title: const Text('Warning'),
+            content: const Text('Dangerous'),
+            actions: [
+              TextButton(onPressed: (){
+                Navigator.of(context).pop();
+              }, child: const Text('OK'),)
+            ],
+          );
+        },);
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('data'),
         actions: [
           IconButton(
             onPressed: () {
-              ref.invalidate(counterProvider);
+              return ref.refresh(counterProvider);
             },
             icon: const Icon(Icons.refresh),
           )
